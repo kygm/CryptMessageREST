@@ -49,9 +49,9 @@ db.once('open', () => {
   console.log('MongoDB Connected');
 }).then(show = 2);
 
-//load clients model
-//require('./Models/Clients');
-//const xyz = mongoose.model('xyz');
+//load users model
+require('./Models/User');
+const Users = mongoose.model('Users');
 
 //load transact model
 //require('./Models/Transaction');
@@ -60,11 +60,16 @@ db.once('open', () => {
 
 app.get('/', async (req, res) => {
   var list;
-  list = await xyz.find({}).lean();
+  list = await Users.find({}).lean();
 
-  return res.status(200).json({ 'lll': list });
+  return res.status(200).json({});
 
 });
+
+app.post('/createUser', async(req,res) =>{
+  //create user operations go here
+});
+
 
 
 //********************CONFIG*SECTION***********************//
