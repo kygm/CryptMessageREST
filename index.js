@@ -6,8 +6,7 @@ const mongoose = require('mongoose');
 const { removeAllListeners } = require('nodemon');
 const cookieParser = require('cookie-parser');
 //for cryptographic operations
-var crypto = require('crypto');
-
+const bcrypt = require('bcrypt');
 //port declaration
 const PORT = process.env.PORT || 1800;
 
@@ -72,51 +71,66 @@ app.get('/', async (req, res) => {
 app.post('/createUser', async (req, res) => {
   //create user operations go here
 
+  var saltRounds = 10;
   //generate salt (16 char in this instance)
-  var salt = genRandomString(16);
+  bcrypt.genSalt(saltRounds, function (err, salt) {
+    bcrypt.hash(req.body.password, salt, async function (err, hash) {
 
-  var pwd = sha512(req.body.password, salt.toString());
+      const newUser = {
+        username: req.body.username,
+        email: req.body.email,
+        password: hash
+      }
+      var usr = await User.findOne({ username: newUser.username });
+      //if user with specified username does not exist, create user and return
+      //user obj
+      if (!usr) {
+        await new User(newUser)
+          .save().then(userObj => {
+            console.log(userObj);
+            return (res.status(200).json("user created"));
 
-  const newUser = {
-    username: req.body.username,
-    email: req.body.email,
-    password: pwd,
-    salt: salt
-  }
-  user = await new User(newUser)
-  .save().then(u =>{
-    return(res.status(200).json(u));
-  })
-  
-});
+          });
+      }
+      else {
+        return (res.status(200).json("user exists"));
+      }
+    });
+
+  });
+
+}); //end createUser route
 
 //posting login credentials. If true, set authorized cookie 
 //as true and create uid cooke. If not, return.
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
+  var result;
+  var user = await User.findOne({
+    username: req.body.username,
+  });
+  if (user) {
+    flag = await bcrypt.compare(req.body.password, user.password);
 
-  //hashed pwd
-  var pwd;
-  var salt;
-  User.find({
-    username: req.body.username,
-  }).lean().then(pass =>{
-    pwd = pass
-  });
-  User.find({
-    username: req.body.username,
-  }).lean().then(s =>{
-    salt = s
-  });
-  if(sha512(req.body.password, salt) == pwd)
-  {
-    return("Valid");
-    //set auth cooker and uid cookies here
+    flag ? result = "Yes" : result = "No";
+    if (flag) {
+      //setting cookies
+      res.cookie("authorized", true, {
+        maxAge: 3600000, //setting cookie timeout at 1hr
+        httpOnly: true
+      });
+      res.cookie("userName", userObj.username);
+
+      result = "Yes";
+    }
+    else {
+      result = "No";
+    }
+
+    return (res.status(200).json(result));
   }
-  else
-  {
-
-    //if -1 in prog, throw error
-    return "Invaild";
+  else {
+    result = "No user found!"
+    return (res.status(200).json(result));
   }
 });
 
@@ -135,19 +149,6 @@ app.get('*', (req, res) => {
 
 //hashing algorithm
 
-var sha512 = function (password, salt) {
-  var hash = crypto.createHmac('sha512', salt); /** Hashing algorithm sha512 */
-  hash.update(password);
-  var value = hash.digest('hex');
-  return value;
-};
-
-//salt gen
-var genRandomString = function (length) {
-  return crypto.randomBytes(Math.ceil(length / 2))
-    .toString('hex') /** convert to hexadecimal format */
-    .slice(0, length);   /** return required number of characters */
-};
 
 //port selection
 app.listen(PORT, () => {
