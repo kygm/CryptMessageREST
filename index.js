@@ -7,6 +7,7 @@ const { removeAllListeners } = require('nodemon');
 const cookieParser = require('cookie-parser');
 //for cryptographic operations
 const bcrypt = require('bcrypt');
+const { json } = require('body-parser');
 //port declaration
 const PORT = process.env.PORT || 1800;
 
@@ -54,6 +55,10 @@ db.once('open', () => {
 //load users model
 require('./Models/User');
 const User = mongoose.model('Users');
+
+//load message model
+require('./Models/Message');
+const Message = mongoose.model('Messages');
 
 //load transact model
 //require('./Models/Transaction');
@@ -134,8 +139,32 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/messages', async (req, res) => {
+app.get('/messages', async (req, res) => {
+  var result;
+  if (req.body.username) {
+    var sentMessages = await Message.find({ senUsername: req.body.username }).lean();
+    !sentMessages ? result = "No sent messages" : result += "sent";
+    var recievedMessages = await Message.find({ recUsername: req.body.username }).lean();
+    !recievedMessages ? result = "No recieved messages" : result += "recieved";
+    //this returns an object of sent messages with given username, recieved messages with given username, and a server result
+    //the server result should be used to let the user know weather or not the server has messages
+    return res.status(200).json({ sentMessages: sentMessages, recievedMessages: recievedMessages, servMessage: result });
+  }
+  else {
+    result = "No Username Sent";
+    return (res.status(500).json(result));
+  }
+});
 
+app.post('/messages', async (req, res) => {
+  var message = await Message(req.body).save().catch((err) => { console.log(err) });
+  if (!message) {
+    result = "Internal Server Error";
+    return res.status(500).json(result);
+  }
+  else {
+    return res.status(201).json(message);
+  }
 });
 
 //if route not exists, send user here
@@ -145,9 +174,6 @@ app.get('*', (req, res) => {
   );
 });
 //********************CONFIG*SECTION***********************//
-
-
-//hashing algorithm
 
 
 //port selection
