@@ -109,6 +109,7 @@ app.post('/createUser', async (req, res) => {
 //posting login credentials. If true, set authorized cookie 
 //as true and create uid cooke. If not, return.
 app.post('/login', async (req, res) => {
+  
   var result;
   var user = await User.findOne({
     username: req.body.username,
