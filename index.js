@@ -1,7 +1,8 @@
 //package declarations
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
+//body parser is depricated. use express.json and express.urlencoded
+//const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { removeAllListeners } = require('nodemon');
 const cookieParser = require('cookie-parser');
@@ -22,8 +23,8 @@ var yyyy = todaysDate.getFullYear();
 
 
 //body parser
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 //cookie parser
 app.use(cookieParser());
 
