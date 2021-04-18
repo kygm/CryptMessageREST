@@ -66,12 +66,13 @@ const Message = mongoose.model('Messages');
 
 
 app.get('/', async (req, res) => {
-  var list;
-  list = await User.find({}).lean();
+  var result;
+  //var list;
+  //list = await User.find({}).lean();
 
-  return res.status(200).json({list});
+  return res.status(200).json({ list });
 
-});
+}); //end index route
 
 app.post('/createUser', async (req, res) => {
   //create user operations go here
@@ -110,6 +111,10 @@ app.post('/createUser', async (req, res) => {
 //as true and create uid cooke. If not, return.
 app.post('/login', async (req, res) => {
 
+  if (!req.body.username || !req.body.password) {
+    return res.status(500).json("Paramater Failure");
+  }
+
   var result;
   var user = await User.findOne({
     username: req.body.username,
@@ -124,7 +129,7 @@ app.post('/login', async (req, res) => {
         maxAge: 3600000, //setting cookie timeout at 1hr
         httpOnly: true
       });
-      res.cookie("userName", userObj.username);
+      //res.cookie("userName", userObj.username);
 
       result = "Yes";
     }
@@ -138,7 +143,7 @@ app.post('/login', async (req, res) => {
     result = "No user found!"
     return (res.status(200).json(result));
   }
-});
+}); //end login route
 
 app.get('/messages', async (req, res) => {
   var result;
