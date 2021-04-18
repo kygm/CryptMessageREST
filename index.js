@@ -69,7 +69,7 @@ app.get('/', async (req, res) => {
   var list;
   list = await User.find({}).lean();
 
-  return res.status(200).json({});
+  return res.status(200).json({list});
 
 });
 
