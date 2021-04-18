@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const { removeAllListeners } = require('nodemon');
 const cookieParser = require('cookie-parser');
 //for cryptographic operations
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { json } = require('body-parser');
 //port declaration
 const PORT = process.env.PORT || 1800;
@@ -109,7 +109,7 @@ app.post('/createUser', async (req, res) => {
 //posting login credentials. If true, set authorized cookie 
 //as true and create uid cooke. If not, return.
 app.post('/login', async (req, res) => {
-  
+
   var result;
   var user = await User.findOne({
     username: req.body.username,
