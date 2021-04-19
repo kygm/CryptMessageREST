@@ -68,6 +68,7 @@ const Message = mongoose.model('Messages');
 
 app.get('/', async (req, res) => {
   var result;
+  show ? result = "Application Running" : result = "Application Database Failiure";
   //var list;
   //list = await User.find({}).lean();
 
@@ -176,9 +177,7 @@ app.post('/messages', async (req, res) => {
 
 //if route not exists, send user here
 app.get('*', (req, res) => {
-  res.status(404).send(
-    "404 Page Not Found! <a href='/'>Click to return to main</a>"
-  );
+  res.status(404).json("No route created");
 });
 //********************CONFIG*SECTION***********************//
 
