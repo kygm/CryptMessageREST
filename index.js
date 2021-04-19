@@ -23,7 +23,7 @@ var yyyy = todaysDate.getFullYear();
 
 
 //body parser
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //cookie parser
 app.use(cookieParser());
@@ -72,7 +72,7 @@ app.get('/', async (req, res) => {
   //var list;
   //list = await User.find({}).lean();
 
-  return res.status(200).json({ list });
+  return res.status(200).json({ result });
 
 }); //end index route
 
