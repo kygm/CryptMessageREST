@@ -147,16 +147,27 @@ app.post('/login', async (req, res) => {
   }
 }); //end login route
 
-app.get('/messages', async (req, res) => {
+app.get('/sentMessages', async (req, res) => {
   var result;
   if (req.body.username) {
     var sentMessages = await Message.find({ senUsername: req.body.username }).lean();
     !sentMessages ? result = "No sent messages" : result += "sent";
+
+    return res.status(200).json({ sentMessages: sentMessages, servMessage: result });
+  }
+  else {
+    result = "No Username Sent";
+    return (res.status(500).json(result));
+  }
+});
+app.get('/recMessages', async (req, res) => {
+  var result;
+  if (req.body.username) {
     var recievedMessages = await Message.find({ recUsername: req.body.username }).lean();
     !recievedMessages ? result = "No recieved messages" : result += "recieved";
     //this returns an object of sent messages with given username, recieved messages with given username, and a server result
     //the server result should be used to let the user know weather or not the server has messages
-    return res.status(200).json({ sentMessages: sentMessages, recievedMessages: recievedMessages, servMessage: result });
+    return res.status(200).json({ recievedMessages: recievedMessages, servMessage: result });
   }
   else {
     result = "No Username Sent";
@@ -167,7 +178,7 @@ app.get('/messages', async (req, res) => {
 app.post('/messages', async (req, res) => {
   var message = await Message(req.body).save().catch((err) => { console.log(err) });
   if (!message) {
-    result = "Internal Server Error";
+    result = "No Message Recieved to Insert into Database";
     return res.status(500).json(result);
   }
   else {
