@@ -61,9 +61,11 @@ const User = mongoose.model('Users');
 require('./Models/Message');
 const Message = mongoose.model('Messages');
 
-//load transact model
-//require('./Models/Transaction');
-//const abc = mongoose.model('abc');
+//load friends model
+require('./Models/Friends');
+const Friend = mongoose.model('Friends');
+
+
 
 
 app.get('/', async (req, res) => {
@@ -172,6 +174,25 @@ app.get('/recMessages', async (req, res) => {
   else {
     result = "No Username Sent";
     return (res.status(500).json(result));
+  }
+});
+
+//get friends list
+app.post('/getFriends', async (req, res) => {
+  let result;
+  var friendsList = await Friend.find({ firstUsername: req.body.username }).lean().catch((err) => { console.log(err) });
+
+  if (!req.body.username) {
+    result = "No Username sent into API!";
+    return res.status(500).json(result);
+  }
+  else if (!friendsList) {
+    result = "No Friends Found!";
+    return res.status(200).json(result);
+  }
+  else {
+    result = "Friends Found";
+    return res.status(200).json(friendsList);
   }
 });
 
