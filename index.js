@@ -215,16 +215,12 @@ app.post('/acceptFriendRequest', async (req, res) => {
 
   let result
 
-  var request = {
-    firstUsername: req.body.sender,
-    secondUsername: req.body.reciever
-  }
   if (req.body.accepted) {
     result = "Friend Request Accepted";
-    await Friend.updateOne({ request }, {
+    await Friend.updateOne({ firstUsername: req.body.sender, secondUsername: req.body.reciever }, {
       accepted: true
-    }, { upsert: true });
-    res.status(200).json(result)
+    });
+    return res.status(200).json(result)
   }
   if (!req.body.accepted) {
     result = "Friend Request Denied";
