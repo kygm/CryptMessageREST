@@ -149,7 +149,7 @@ app.post('/login', async (req, res) => {
   }
 }); //end login route
 
-app.get('/sentMessages', async (req, res) => {
+app.post('/sentMessages', async (req, res) => {
   var result;
   if (req.body.username) {
     var sentMessages = await Message.find({ senUsername: req.body.username }).lean();
@@ -162,7 +162,7 @@ app.get('/sentMessages', async (req, res) => {
     return (res.status(500).json(result));
   }
 });
-app.get('/recMessages', async (req, res) => {
+app.post('/recMessages', async (req, res) => {
   var result;
   if (req.body.username) {
     var recievedMessages = await Message.find({ recUsername: req.body.username }).lean();
