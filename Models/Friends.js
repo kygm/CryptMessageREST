@@ -19,7 +19,7 @@ const Friends = new Schema(
     accepted:
     {
       type: Boolean,
-      default: false
+      default: false,
     },
     dateEntered:
     {

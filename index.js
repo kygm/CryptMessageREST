@@ -196,6 +196,18 @@ app.post('/getFriends', async (req, res) => {
   }
 });
 
+app.post('/sendFriendRequest', async (req, res) => {
+  let result;
+
+  var request = {
+    firstUsername: req.body.sender,
+    secondUsername: req.body.reciever
+  }
+  var freq = await Friend(request).save().catch((err) => { console.log(err) });
+
+  return res.status(200).json(freq);
+});
+
 app.post('/messages', async (req, res) => {
   var message = await Message(req.body).save().catch((err) => { console.log(err) });
   if (!message) {
