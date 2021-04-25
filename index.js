@@ -197,15 +197,44 @@ app.post('/getFriends', async (req, res) => {
 });
 
 app.post('/sendFriendRequest', async (req, res) => {
-  let result;
 
   var request = {
     firstUsername: req.body.sender,
     secondUsername: req.body.reciever
   }
-  var freq = await Friend(request).save().catch((err) => { console.log(err) });
+  var fReq = await Friend(request).save().catch((err) => { console.log(err) });
 
-  return res.status(200).json(freq);
+  if (!fReq) {
+    let result = "Failed to send request!";
+    return res.status(500).json(result);
+  }
+  return res.status(200).json(fReq);
+});
+
+app.post('/acceptFriendRequest', async (req, res) => {
+
+  let result
+
+  var request = {
+    firstUsername: req.body.sender,
+    secondUsername: req.body.reciever
+  }
+  if (req.body.accepted) {
+    result = "Friend Request Accepted";
+    await Friend.updateOne({ request }, {
+      accepted: true
+    }, { upsert: true });
+    res.status(200).json(result)
+  }
+  if (!req.body.accepted) {
+    result = "Friend Request Denied";
+    await Friend.deleteOne({ request });
+    return res.status(200).json(result);
+  }
+  else {
+    result = "Did not recieve proper paramaters!";
+    return res.status(200).json(result);
+  }
 });
 
 app.post('/messages', async (req, res) => {
