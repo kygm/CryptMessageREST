@@ -152,7 +152,7 @@ app.post('/login', async (req, res) => {
 app.post('/sentMessages', async (req, res) => {
   var result;
   if (req.body.username) {
-    var sentMessages = await Message.find({ senUsername: req.body.username }).lean();
+    var sentMessages = await Message.find({ senUsername: req.body.username }).sort({ "dateEntered": -1 }).lean();
     !sentMessages ? result = "No sent messages" : result += "sent";
 
     return res.status(200).json({ sentMessages: sentMessages, servMessage: result });
@@ -165,7 +165,7 @@ app.post('/sentMessages', async (req, res) => {
 app.post('/recMessages', async (req, res) => {
   var result;
   if (req.body.username) {
-    var recievedMessages = await Message.find({ recUsername: req.body.username }).lean();
+    var recievedMessages = await Message.find({ recUsername: req.body.username }).sort({ "dateEntered": -1 }).lean();
     !recievedMessages ? result = "No recieved messages" : result += "recieved";
     //this returns an object of sent messages with given username, recieved messages with given username, and a server result
     //the server result should be used to let the user know weather or not the server has messages
