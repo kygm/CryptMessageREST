@@ -98,12 +98,12 @@ app.post('/createUser', async (req, res) => {
         await new User(newUser)
           .save().then(userObj => {
             console.log(userObj);
-            return (res.status(200).json("user created"));
+            return (res.status(200).json("User created"));
 
           });
       }
       else {
-        return (res.status(200).json("user exists"));
+        return (res.status(200).json("Username already exists!"));
       }
     });
 
