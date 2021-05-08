@@ -202,7 +202,19 @@ app.post('/sendFriendRequest', async (req, res) => {
     firstUsername: req.body.sender,
     secondUsername: req.body.reciever
   }
-  var fReq = await Friend(request).save().catch((err) => { console.log(err) });
+  var friends = await Friend().find(request).lean();
+  if(friends.accepted = true)
+  {
+    let result = "Already Friends!";
+    return res.status(500).json(result); 
+  }
+  else if(friends){
+    let result = "Friend Request Already Sent!";
+    return res.status(500).json(result);
+  }
+  else {
+    var fReq = await Friend(request).save().catch((err) => { console.log(err) });
+  }
 
   if (!fReq) {
     let result = "Failed to send request!";
