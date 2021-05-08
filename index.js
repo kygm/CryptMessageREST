@@ -196,6 +196,27 @@ app.post('/getFriends', async (req, res) => {
   }
 });
 
+app.post('/getFriendRequests', async (req, res) => {
+  let result;
+  if (req.body.username) {
+    var pendingRequests = await
+      Friend.find({ firstUsername: req.body.username, accepted: true }).lean();
+
+    if (!pendingRequests) {
+      let result = "No Pending Friend Requests"
+      return res.status(200).json(result);
+    }
+    else {
+      return res.status(200).json(pendingRequests);
+    }
+
+  }
+  else {
+    result = "No Username Sent!";
+    return res.status(500).json(result);
+  }
+});
+
 app.post('/sendFriendRequest', async (req, res) => {
 
   var request = {
@@ -203,12 +224,11 @@ app.post('/sendFriendRequest', async (req, res) => {
     secondUsername: req.body.reciever
   }
   var friends = await Friend().find(request).lean();
-  if(friends.accepted = true)
-  {
+  if (friends.accepted = true) {
     let result = "Already Friends!";
-    return res.status(500).json(result); 
+    return res.status(500).json(result);
   }
-  else if(friends){
+  else if (friends) {
     let result = "Friend Request Already Sent!";
     return res.status(500).json(result);
   }
