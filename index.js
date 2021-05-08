@@ -78,6 +78,18 @@ app.get('/', async (req, res) => {
 
 }); //end index route
 
+app.get('/getAllUsers', async (req, res) => {
+  var users = await User.find({}).lean();
+  if (users) {
+    return res.status(200).json(users);
+  }
+  else {
+    return res.status(500).json("Error!");
+  }
+});
+
+
+
 app.post('/createUser', async (req, res) => {
   //create user operations go here
 
