@@ -161,6 +161,21 @@ app.post('/login', async (req, res) => {
   }
 }); //end login route
 
+app.post('/allMessages', async (req, res) => {
+  var result;
+  if (!req.body.sender || !req.body.reciever) {
+    result = "Paramater Error!";
+    return (res.status(500).json(result));
+  }
+  else {
+    var messages = await Message.find({ senUsername: req.body.sender, recUsername: req.body.reciever }).lean();
+
+    !messages ? result = "No messages between two usernames" : result += "sent";
+
+    return res.status(200).json({ messages: messages, servMessage: result });
+  }
+});
+
 app.post('/sentMessages', async (req, res) => {
   var result;
   if (req.body.username) {
