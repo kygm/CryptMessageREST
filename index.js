@@ -235,7 +235,7 @@ app.post('/sendFriendRequest', async (req, res) => {
     firstUsername: req.body.sender,
     secondUsername: req.body.reciever
   }
-  var friends = await Friend().find(request).lean();
+  var friends = await Friend.find(request).lean();
   if (friends.accepted = true) {
     let result = "Already Friends!";
     return res.status(500).json(result);
