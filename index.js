@@ -169,10 +169,10 @@ app.post('/allMessages', async (req, res) => {
   }
   else {
     var messages = await Message.find({ senUsername: req.body.sender, recUsername: req.body.reciever }).lean();
-
+    var moreMessages = await Message.find({ senUsername: req.body.reciever, recUsername: req.body.sender }).lean();
     !messages ? result = "No messages between two usernames" : result += "sent";
 
-    return res.status(200).json({ messages: messages, servMessage: result });
+    return res.status(200).json({ messages: messages,moreMessages: moreMessages, servMessage: result });
   }
 });
 
@@ -250,8 +250,15 @@ app.post('/sendFriendRequest', async (req, res) => {
     firstUsername: req.body.sender,
     secondUsername: req.body.reciever
   }
-  var friends = await Friend.find(request).lean();
-  if (friends.accepted = true) {
+  var friends = await Friend.find({ firstUsername: req.body.sender, secondUsername: req.body.reciever }).lean();
+
+  console.log(friends);
+
+  if (friends.toString() < 1) {
+    var fReq = await Friend(request).save().catch((err) => { console.log(err) });
+    return res.status(201).json(fReq);
+  }
+  else if (friends.accepted == true) {
     let result = "Already Friends!";
     return res.status(500).json(result);
   }
@@ -259,9 +266,7 @@ app.post('/sendFriendRequest', async (req, res) => {
     let result = "Friend Request Already Sent!";
     return res.status(500).json(result);
   }
-  else {
-    var fReq = await Friend(request).save().catch((err) => { console.log(err) });
-  }
+
 
   if (!fReq) {
     let result = "Failed to send request!";
