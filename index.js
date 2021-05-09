@@ -162,7 +162,7 @@ app.post('/login', async (req, res) => {
 }); //end login route
 
 app.post('/allMessages', async (req, res) => {
-  var result;
+  var result = "";
   if (!req.body.sender || !req.body.reciever) {
     result = "Paramater Error!";
     return (res.status(500).json(result));
