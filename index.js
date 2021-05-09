@@ -168,11 +168,16 @@ app.post('/allMessages', async (req, res) => {
     return (res.status(500).json(result));
   }
   else {
-    var messages = await Message.find({ senUsername: req.body.sender, recUsername: req.body.reciever }).lean();
-    var moreMessages = await Message.find({ senUsername: req.body.reciever, recUsername: req.body.sender }).lean();
+    var messages = await Message.find(
+      {$or: [
+        { senUsername: req.body.sender, recUsername: req.body.reciever }, 
+        {senUsername: req.body.reciever, recUsername: req.body.sender}
+      ]}
+      ).lean();
+    //var moreMessages = await Message.find({ senUsername: req.body.reciever, recUsername: req.body.sender }).lean();
     !messages ? result = "No messages between two usernames" : result += "sent";
 
-    return res.status(200).json({ messages: messages,moreMessages: moreMessages, servMessage: result });
+    return res.status(200).json({ messages: messages, servMessage: result });
   }
 });
 
