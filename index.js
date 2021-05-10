@@ -232,7 +232,7 @@ app.post('/getFriendRequests', async (req, res) => {
   let result;
   if (req.body.username) {
     var pendingRequests = await
-      Friend.find({ firstUsername: req.body.username, accepted: true }).lean();
+      Friend.find({ firstUsername: req.body.username, accepted: false }).lean();
 
     if (!pendingRequests) {
       let result = "No Pending Friend Requests"
