@@ -169,11 +169,13 @@ app.post('/allMessages', async (req, res) => {
   }
   else {
     var messages = await Message.find(
-      {$or: [
-        { senUsername: req.body.sender, recUsername: req.body.reciever }, 
-        {senUsername: req.body.reciever, recUsername: req.body.sender}
-      ]}
-      ).lean();
+      {
+        $or: [
+          { senUsername: req.body.sender, recUsername: req.body.reciever },
+          { senUsername: req.body.reciever, recUsername: req.body.sender }
+        ]
+      }
+    ).lean();
     //var moreMessages = await Message.find({ senUsername: req.body.reciever, recUsername: req.body.sender }).lean();
     !messages ? result = "No messages between two usernames" : result += "sent";
 
@@ -261,7 +263,7 @@ app.post('/sendFriendRequest', async (req, res) => {
 
   if (friends.toString() < 1) {
     var fReq = await Friend(request).save().catch((err) => { console.log(err) });
-    return res.status(201).json(fReq);
+    return res.status(201).json("request sent");
   }
   else if (friends.accepted == true) {
     let result = "Already Friends!";
