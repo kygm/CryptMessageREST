@@ -335,18 +335,18 @@ app.post('/messages', async (req, res) => {
   
   var message = {
     senUsername: req.body.senUsername,
-    recUsername: req.body.reqUsername,
-    message: encryptedMessage
+    recUsername: req.body.recUsername,
+    message: req.body.message
   }
   
   
-  await Message(message).save().catch((err) => { console.log(err) });
+  var msg = await Message(message).save().catch((err) => { console.log(err) });
   if (!message) {
     result = "No Message Recieved to Insert into Database";
     return res.status(500).json(result);
   }
   else {
-    return res.status(201).json(message);
+    return res.status(201).json(msg);
   }
 });
 
