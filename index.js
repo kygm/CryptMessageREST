@@ -9,6 +9,9 @@ const cookieParser = require('cookie-parser');
 //for cryptographic operations
 const bcrypt = require('bcryptjs');
 const { json } = require('body-parser');
+
+const crypto = require('crypto');
+var assert = require('assert');
 //port declaration
 const PORT = process.env.PORT || 1800;
 
@@ -271,7 +274,7 @@ app.post('/sendFriendRequest', async (req, res) => {
   }
   else if (friends) {
     let result = "Friend Request Already Sent!";
-    return res.status(500).json(result);
+    return res.status(500).json(result);2
   }
 
 
@@ -289,13 +292,17 @@ app.post('/acceptFriendRequest', async (req, res) => {
   if (req.body.accepted) {
     result = "Friend Request Accepted";
     await Friend.updateOne({ firstUsername: req.body.sender, secondUsername: req.body.reciever }, {
+      firstUsername: req.body.sender, 
+      secondUsername: req.body.reciever,
       accepted: true
     });
     return res.status(200).json(result)
   }
-  if (!req.body.accepted) {
+  else if (!req.body.accepted) {
     result = "Friend Request Denied";
-    await Friend.deleteOne({ request });
+    //console.log(req.body);
+    //console.log(req.body.sender + " " + req.body.reciever);
+    await Friend.deleteOne({ firstUsername: req.body.sender, secondUsername: req.body.reciever });
     return res.status(200).json(result);
   }
   else {
@@ -305,7 +312,35 @@ app.post('/acceptFriendRequest', async (req, res) => {
 });
 
 app.post('/messages', async (req, res) => {
-  var message = await Message(req.body).save().catch((err) => { console.log(err) });
+  /*
+      senUsername:
+    {
+      type: String,
+      required: true
+    },
+    recUsername:
+    {
+      type: String,
+      required: true
+    },
+    message:
+    {
+      type: String,
+      required: true
+    },
+  */
+
+  var algorithm = "aes256";
+
+  
+  var message = {
+    senUsername: req.body.senUsername,
+    recUsername: req.body.reqUsername,
+    message: encryptedMessage
+  }
+  
+  
+  await Message(message).save().catch((err) => { console.log(err) });
   if (!message) {
     result = "No Message Recieved to Insert into Database";
     return res.status(500).json(result);
